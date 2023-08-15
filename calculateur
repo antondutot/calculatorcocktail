@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de bar personnalisé</title>
+<style>
+
+  body {
+  font-family: 'Montserrat', sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .widget-container {
+    background-color: #ffffff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .widget-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .input-container {
+    margin-bottom: 10px;
+  }
+
+  .input-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .input-container div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .input-container label {
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 5px;
+  }
+
+  .button-calculate {
+    background-color: #d4af37;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .result-container {
+    margin-top: 20px;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="widget-container">
+  <div class="widget-title">Calculateur de bar Personnalisé</div>
+  <div class="input-container">
+    <label for="invite-count" class="input-label">Nombre d'invités:</label>
+    <input type="number" id="invite-count" min="0" />
+  </div>
+  <div class="input-container">
+    <label for="duration" class="input-label">Durée de l'événement (heures):</label>
+    <input type="number" id="duration" min="0" />
+  </div>
+  <div class="input-container">
+    <label for="glasses-per-hour" class="input-label">Verres par personne par heure:</label>
+    <select id="glasses-per-hour">
+      <option value="1">1</option>
+      <option value="1.5">1,5</option>
+      <option value="2">2</option>
+      <option value="2.5">2,5</option>
+      <option value="3">3</option>
+    </select>
+  </div>
+  <div class="input-container">
+    <label class="input-label">Boissons à servir:</label>
+    <div>
+      <label for="serve-wine"><input type="checkbox" id="serve-wine" /> Vin</label>
+      <label for="serve-beer"><input type="checkbox" id="serve-beer" /> Bière</label>
+      <label for="serve-cocktail"><input type="checkbox" id="serve-cocktail" /> Cocktail</label>
+    </div>
+  </div>
+  <button class="button-calculate" onclick="calculateBeverages()">Calculer</button>
+  <div class="result-container" id="result"></div>
+</div>
+
+<script>
+function calculateBeverages() {
+  const inviteCount = document.getElementById("invite-count").value;
+  const duration = document.getElementById("duration").value;
+  const glassesPerHour = document.getElementById("glasses-per-hour").value;
+  const serveWine = document.getElementById("serve-wine").checked;
+  const serveBeer = document.getElementById("serve-beer").checked;
+  const serveCocktail = document.getElementById("serve-cocktail").checked;
+  const resultContainer = document.getElementById("result");
+
+  if (inviteCount && duration && glassesPerHour) {
+    const totalGlasses = inviteCount * duration * glassesPerHour;
+
+    const selectedOptions = [serveWine, serveBeer, serveCocktail].filter(Boolean).length;
+    const winePercentage = serveWine ? 1 / selectedOptions : 0;
+    const beerPercentage = serveBeer ? 1 / selectedOptions : 0;
+    const cocktailPercentage = serveCocktail ? 1 / selectedOptions : 0;
+
+    const wine = Math.ceil((totalGlasses * winePercentage) / 5); // 5 oz par verre de vin
+    const beer = Math.ceil((totalGlasses * beerPercentage) / 3.3); // 12 oz par verre de bière
+
+    // Estimations des ingrédients pour les cocktails
+    const cocktails = Math.ceil(totalGlasses * cocktailPercentage); // 1 cocktail par verre
+    const liquor = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage) / 33.8) : 0; // 1 oz par cocktail
+    const vodka = Math.ceil(liquor * 0.3 * 0.75); // 25% de vodka, conversion en bouteilles de 750 ml
+    const gin = Math.ceil(liquor * 0.3 * 0.75); // 20% de gin, conversion en bouteilles de 750 ml
+    const rum = Math.ceil(liquor * 0.2 * 0.75); // 20% de rhum, conversion en bouteilles de 750 ml
+    const tequila = Math.ceil(liquor * 0.05 * 0.75); // 10% de tequila, conversion en bouteilles de 750 ml
+    const whiskey = Math.ceil(liquor * 0.1 * 0.75); // 15% de whisky, conversion en bouteilles de 750 ml
+    const otherLiquor = Math.ceil(liquor * 0.05 * 0.75); // 10% d'autres spiritueux, conversion en bouteilles de 750 ml
+const sodaCans = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage * 150 * 0.25) / 330) : 0; // 4 oz de soda par cocktail, 25% de la proportion
+  const tonicCans = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage * 150 * 0.25) / 330) : 0; // 4 oz de tonic par cocktail, 25% de la proportion
+  const cocaCans = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage * 150 * 0.15) / 330) : 0; // 4 oz de Coca par cocktail, 15% de la proportion
+  const fruitJuice = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage * 150 * 0.25) / 1000) : 0; // 4 oz de jus de fruit par cocktail, 25% de la proportion
+  const gingerAleCans = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage * 150 * 0.1) / 330) : 0; // 4 oz de Ginger Ale par cocktail, 10% de la proportion
+    const ice = serveCocktail ? Math.round((totalGlasses * cocktailPercentage * 100) / 2700) : 0; // 100 g de glace par cocktail, résultat en sacs de 2,7 kg arrondi
+    const fruit = serveCocktail ? Math.ceil((totalGlasses * cocktailPercentage) / 12) : 0; // 1/12 de lime par cocktail
+
+// Afficher les résultats
+resultContainer.innerHTML = `
+  ${wine ? `<div class="result-item"><span>Vin (bouteilles) :</span><span>${wine}</span></div>` : ""}
+  ${beer ? `<div class="result-item"><span>Bière (bouteilles) :</span><span>${beer}</span></div>` : ""}
+  ${vodka ? `<div class="result-item"><span>Vodka (bouteilles de 750ml) :</span><span>${vodka}</span></div>` : ""}
+  ${gin ? `<div class="result-item"><span>Gin (bouteilles de 750ml) :</span><span>${gin}</span></div>` : ""}
+  ${rum ? `<div class="result-item"><span>Rhum (bouteilles de 750ml) :</span><span>${rum}</span></div>` : ""}
+  ${tequila ? `<div class="result-item"><span>Tequila (bouteilles de 750ml) :</span><span>${tequila}</span></div>` : ""}
+  ${whiskey ? `<div class="result-item"><span>Whisky (bouteilles de 750ml) :</span><span>${whiskey}</span></div>` : ""}
+  ${otherLiquor ? `<div class="result-item"><span>Autres spiritueux (bouteilles de 750ml) :</span><span>${otherLiquor}</span></div>` : ""}
+  ${sodaCans ? `<div class="result-item"><span>Canettes de soda :</span><span>${sodaCans}</span></div>` : ""}
+    ${tonicCans ? `<div class="result-item"><span>Canettes de tonic :</span><span>${tonicCans}</span></div>` : ""}
+    ${cocaCans ? `<div class="result-item"><span>Canettes de Coca :</span><span>${cocaCans}</span></div>` : ""}
+    ${fruitJuice ? `<div class="result-item"><span>Jus de fruits (litres) :</span><span>${fruitJuice}</span></div>` : ""}
+    ${gingerAleCans ? `<div class="result-item"><span>Canettes de Ginger Ale :</span><span>${gingerAleCans}</span></div>` : ""}
+    <span>${ice}</span></div>
+  <div class="result-item"><span>Limes :</span><span>${fruit}</span></div>
+`;} else {
+resultContainer.innerHTML = "<p>Veuillez remplir tous les champs.</p>";
+}
+}
+
+document.getElementById("calculate-btn").addEventListener("click", calculateBeverages);
+
+
+
+
+
+</script>
+</body>
+</html>
